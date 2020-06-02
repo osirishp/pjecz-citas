@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery.timepicker.js"></script>
+	<link rel="stylesheet" type="text/css" href="jquery.timepicker.css" />
+	<link rel="stylesheet" type="text/css" href="lib/site.css" />
+<!--	<script type="text/javascript" src="lib/bootstrap-datepicker.js"></script> -->
+<!--	<link rel="stylesheet" type="text/css" href="lib/bootstrap-datepicker.css" /> -->
+<!-- 	<script type="text/javascript" src="lib/site.js"></script> -->
+</head>
+
+<body>
+
+
+	<section id="examples">
+		<article>
+			<div class="demo">
+				<p>
+					<input id="durationExample" type="text" class="time" />
+				</p>
+			</div>
+			<script>
+			$(function() {
+				$('#durationExample').timepicker({
+					'minTime': '10:00am',
+					'maxTime': '08:00pm',
+					'showDuration': false,
+					'step': 15
+				});
+			});
+			</script>
+			
+		</article>
+	</section>
+
+</body>
+
+</html>

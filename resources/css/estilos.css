@@ -1,0 +1,67 @@
+@charset "utf-8";
+/* CSS Document */
+
+a { font-family:'Interstate Light Cond',Arial ;color:#060; font-weight:bold; }
+a:hover { color:#C30; text-decoration:none; }
+a.edit { color:#666; text-decoration:none; font-size:24px; background-color:transparent; width:100%; padding:3px; }
+a.edit:hover {  font-size:24px; color:#333; }
+
+a.URLnombre { color:#666; text-decoration:none; font-size:10px;  width:100%; padding:3px; }
+a.URLnombre:hover {  font-size:10px; color:#333; }
+
+
+body {  font-family:'Interstate Light Cond',Arial ; background-color:#efeff1; margin:0; text-align:center;}
+
+.dia{ font-family:'Interstate Light Cond',Arial ;width:93%; border-top:1px #ccc solid; padding:10px; margin:0px;}
+
+#gris{ background-color:#efeff1;}
+#docMain { font-family:'Interstate Light Cond',Arial ; background-color:#fff; text-align:justify; height:auto; margin:0 auto 0 auto; }
+#docHeader { text-align:center; height:150px; background-color:#0C5500; }
+#docContent { font-family:'Interstate Light Cond',Arial ; background-color:#FFF; height:auto; background: url(../resources/imgs/img_calendar.png) no-repeat; background-position:right bottom }
+#docWorkArea { text-align:justify; height:inherit; color:#000; font-size:12px; margin:10px; }
+#docFooter { text-align:center; height:50px; background-color:#FFF; color:#000; font-size:11px; border-top:1px solid #060; }
+	
+img { border:0; }
+
+td.hd { font-size:14px; font-weight:bold; color:#000; text-align:center;  width:100px; height:60px; border-right:3px #666666 solid; }
+td.cal { font-size:12px; color:#060; text-align:right; height:100px; vertical-align:top; border:0px solid #999; width:100px;  }
+td.hoy { font-size:12px; color:#060; text-align:right; height:100px; vertical-align:top; border:0px solid #999; background-color: #9C6; width:100px; }
+td.domingo { background-color:#efeff1; width:100px; }
+
+
+#eventos { font-size:14px; color:#000; text-align:left; padding-bottom:3px; border-bottom:0px solid #999; }
+#grupoEv { padding:10px; text-align:left; overflow:hidden; ; width:auto; height:auto; min-height:100px;  /* heigth se debe modificar a 100px o AUTO; para hacer mas uniforme el calendario */
+		white-space:nowrap ;
+	scrollbar-face-color: #2F4F2F; /* color del primer plano */
+	scrollbar-shadow-color: gray; /* color de la sombra de fondo */
+	scrollbar-highlight-color: white; /* color de la luz del cuadro de flecha */
+	scrollbar-3dlight-color:green; /* color de la luz 3D */
+	scrollbar-darkshadow-color: black; /* color sombra primer plano */
+	scrollbar-track-color: white; /* color del fondo de la barra */
+	scrollbar-arrow-color : #FFFFFF; /* color de la flecha */
+	
+}
+#mesEv { font-size:20pt; font-weight:bold; color:#000; text-align:center; }
+#textoEv {  font-size:12pt; font-weight:bold; color:#666; text-align:center; }
+.enk { background-image:url(../img/hdpix.jpg); background-repeat:repeat-x; vertical-align:top; margin-left:20px; }
+.detalle { width:80px; }
+.calendario { border:0px solid #666; }
+
+#detalleEv { font-size:14px; color:#030; padding:3px; background-color:#DDD; border-left:2px solid #FF0000; }
+#Contexto { font-size:12px; color:#666; padding:3px; background-color:#CDC; border-left:2px solid #CDC; }
+
+
+
+.finSemana{
+	filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=1,StartColorStr='green',EndColorStr='white');
+	font:Arial, Helvetica, sans-serif;
+	font-size:14px;
+	color:black;
+	font-weight:bold;
+}
+
+
+
+
+
+
