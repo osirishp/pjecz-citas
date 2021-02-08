@@ -13,6 +13,10 @@ html {
 body {
   margin: 0;
 }
+
+regButton{
+  color: red
+}
 article,
 aside,
 details,

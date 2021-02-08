@@ -52,6 +52,7 @@ $xajax->printJavaScript();
 <?php //include("usuario.php") ; ?>
 
 <!-- banner -->
+<?php //include("banner.php"); ?>
 <?php include("banner.php"); ?>
 <!-- //banner -->
 
@@ -81,7 +82,7 @@ $xajax->printJavaScript();
     <?php include("agendaResponsiva.php");?>
 </div>
 <!-- footer -->
-<div class="container-fluid" style="background-color:#343A40 ">
+<div class="container-fluid" style="background-color:#163b67 ">
 	<?php include("footer.php"); ?>	
 </div>
 <!-- //footer -->

@@ -132,8 +132,27 @@ include_once("funciones_ajax.php") ;
 			  } 
 			});
 		}
+		function bloquearHora(){
+			var hora  = document.getElementById('horaSeleccionada').value ;
+			var fecha  = document.getElementById('fechaSeleccionada').value ;
+			var detalles  = document.getElementById('detalles').value ;      
+		  				$.post(
+							"funcionesJS.php" ,
+							{
+								accion : "bloquear hora" ,
+								hora: hora ,
+								fecha : fecha ,
+								detalles : detalles 
+							},
+							function(resultado){
+								if(resultado=="YES" ){
+									location.reload();
+								}
+							}
+						);
+		}
 		
-		function bloquearHora(hora, fecha){      
+		function bloquearHora_standby(hora, fecha){      
 		  swal({
 			  title: "La hora sera bloqueada para registrar Citas",
 			  text: "confirme el cambio",
@@ -169,6 +188,47 @@ include_once("funciones_ajax.php") ;
 			  } 
 			});
 		}
+
+		function desbloquearHora(hora, fecha){  
+			$(".urlHoraSelected").removeClass("urlHoraSelected") ; 
+			document.getElementById('divDetalles').style.display = 'none' ;
+			document.getElementById('divConfirmar').style.display = 'none' ;
+			document.getElementById('divTxtConfirmar').style.display = 'none' ;   
+		  swal({
+			  title: "La hora sera habilitada para registrar Citas",
+			  text: "confirme el cambio",
+			  icon: "info",
+			  buttons: [
+				'No',
+				'Si, habilitar horario'
+			  ],
+			  dangerMode: false,
+			}).then(function(isConfirm) {
+			  if (isConfirm) {
+				swal({
+				  title: 'Horario habilitado para citas',
+				  text: 'La hora fue habilitada correctamente',
+				  icon: 'success'
+				}).then(function() {
+						$.post(
+							"funcionesJS.php" ,
+							{
+								accion : "desbloquear hora" ,
+								hora: hora ,
+								fecha : fecha  
+							},
+							function(resultado){
+								if(resultado=="YES" ){
+									location.reload();
+								}
+							}
+						);
+							
+				  	
+				});
+			  } 
+			});
+		}
 		
 	 function buscarCliente(_id){
 		 xajax_buscarPaciente(_id);
@@ -184,7 +244,7 @@ include_once("funciones_ajax.php") ;
 
 <script src="resources/js/ajax.js"></script>
     
-   <div class="modal-dialog modal-lg" >
+   <div class="modal-dialog modal-lg" style="font-style: normal;" >
     
       <!-- Modal content-->
       <div class="modal-content">
@@ -225,13 +285,12 @@ include_once("funciones_ajax.php") ;
 							
                             <?php 
                             	$horasBloqueadas = array() ;
-                            	$sql = "select * from horasBloqueadas where fecha = '$_POST[fecha]' and id_juzgado = '$_SESSION[id_juzgado]' " ;
+                            	$sql = "select * from horasBloqueadas where fecha = '$_POST[fecha]' and id_juzgado = '$_SESSION[id_juzgado]' and activo=1 " ;
                             	$query = mysqli_query($link, $sql) ;
                             	while($datos = mysqli_fetch_assoc($query)){
                             		$horasBloqueadas[] = substr($datos['hora'],0,5) ;
                             	}
                             			$horarios = array(	
-															 "08:30", 
 															 "09:00", 
 															 "09:30", 
 															 "10:00", 
@@ -242,19 +301,21 @@ include_once("funciones_ajax.php") ;
 															 "12:30", 
 															 "13:00", 
 															 "13:30", 
-															 "14:00"
+															 "14:00",
+															 "14:30",
+															 "15:00"
 														) ;
                             	foreach($horarios as $llave => $valor){
                             		if(in_array($valor,$horasBloqueadas)) {
                             			echo  "<div class='col-md-1 horaOcupada'>
-                            					<a href='javascript:void(0) ;' onclick='desbloquearHora($valor,\"$_POST[fecha]\")' class='urlHoraBlanco' >
+                            					<a href='javascript:void(0) ;desbloquearHora(\"$valor\",\"$_POST[fecha]\")' class='urlHoraBlanco' >
                             							$valor
                             					</a>
                             				</div>" ;
                             		}
                             		else{
                             			echo  "<div class='col-md-1 horaLibre'>
-                            					<a href='javascript:void(0) ;bloquearHora(\"$valor\",\"$_POST[fecha]\")' onclick='' class='urlHora' >
+                            					<a href='javascript:void(0) ;' onclick='mostrarCampos(\"$valor\",\"$_POST[fecha]\",this)' class='urlHora' >
                             							$valor
                             					</a>
                             				</div>" ;	
@@ -263,6 +324,32 @@ include_once("funciones_ajax.php") ;
                             	}  
                             	?>
         						</div>	
+								<input type="hidden" name="fechaSeleccionada" id="fechaSeleccionada">
+								<input type="hidden" name="horaSeleccionada" id="horaSeleccionada">
+        						<div class="row" id="divDetalles" style="display:none;">
+        							<div class="col-md-12" >
+        								<br>
+        								<label for="">El horario seleccionado será bloqueado para registrar Citas en este juzgado. Al momento de proceder se generará un reporte automático. </label>
+        								<br><br>
+        								<label for="">Por favor indique con detalles el motivo para bloquear el horario del juzgado</label><br>
+        								<textarea name="detalles" id="detalles" cols="30" rows="4" class="form-control" onkeydown="verBloquear(this.value)"></textarea>
+        								<label style="font-size: 12px;">Teclee al menos 50 caracteres como detalle</label>
+        							</div>
+        						</div>
+        						<br>
+        						<div class="row" id="divTxtConfirmar" style="display: none">
+        							<div class="col-md-12">
+        								<label for="">Tecleé la palabra <b>BLOQUEAR</b> y de click en confirmar</label>
+        								<input type="text" value="" name="bloquear" id="bloquear" class="form-control" onkeyup="javascript:if(this.value=='bloquear' || this.value=='BLOQUEAR'){document.getElementById('divConfirmar').style.display = 'block'; document.getElementById('detalles').disabled = true  ;}else{document.getElementById('divConfirmar').style.display = 'none'}">
+        							</div>
+        						</div>
+        						<div class="row" id="divConfirmar" style="display: none">
+        							<div class="col-md-12">
+        								<br>
+        								<input type="button" value="Confirmar" class="btn btn-secondary" onclick="bloquearHora()">
+        								
+        							</div>
+        						</div>
         
         				</div>
         			</div>
@@ -282,7 +369,21 @@ include_once("funciones_ajax.php") ;
       
     </div>
     
-    
+ <script>
+ 	function mostrarCampos(hora,fecha,elemento){
+ 		document.getElementById('divDetalles').style.display = ' block ';
+ 		document.getElementById('fechaSeleccionada').value = fecha ;
+ 		document.getElementById('horaSeleccionada').value = hora ;
+ 		$(".urlHoraSelected").removeClass("urlHoraSelected") ;
+    	$(elemento).addClass('urlHoraSelected') ;
+ 	}
+ 	function verBloquear(valor){
+ 		var dato = valor ;
+ 		if(dato!="" && dato.length >50){
+ 			document.getElementById('divTxtConfirmar').style.display = 'block'
+ 		}
+ 	}
+</script>   
     
 <!-- Latest minified bootstrap css -->
 <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -397,7 +498,7 @@ include_once("funciones_ajax.php") ;
 				$where = " c.fecha='$_POST[fecha]' and c.id_juzgado='$_SESSION[id_juzgado]'  and (c.estatus!='Eliminada' or c.estatus IS NULL)";	
 			}
 			
-				$sql = "SELECT c.*,concat(u.nombre,' ',u.apPaterno,' ',u.apMaterno) as nombre,u.telefono,s.servicio FROM citas c
+				$sql = "SELECT c.*,concat(u.nombre,' ',u.apPaterno,' ',u.apMaterno) as nombre,u.celular,s.servicio FROM citas c
 								inner join usuario u on c.id_beneficiario = u.id
 								inner join cat_servicios s on c.id_servicio = s.id
 								where $where

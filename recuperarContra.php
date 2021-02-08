@@ -1,22 +1,21 @@
 <?php
 include ("funciones.php");
-include_once('resources/correo/class.phpmailer.php');
-include_once('resources/correo/class.smtp.php');
+error_reporting(0);
+require("SendGrid/sendgrid-php.php");
 $link = conectarse();
- //session_start();
 $error="";
 
 if(isset($_POST['btnContra']))
 {
-    $email=$_POST['txtEmail'];
+    $correo=$_POST['txtEmail'];
 
-    if($email =="")
+    if($correo =="")
     {
         $error="Ingresar correo electronico";
     }
     else
     {
-      $sqlExisteUsu = "select concat(nombre,' ',apPaterno,' ', apMaterno) as Nombre, id, email from usuario where email = '$email'";
+      $sqlExisteUsu = "select concat(nombre,' ',apPaterno,' ', apMaterno) as Nombre, id, email from usuario where email = '$correo'";
 
       $resultExisteUsu = mysqli_query($link,$sqlExisteUsu);
       $row = mysqli_fetch_array($resultExisteUsu,MYSQLI_ASSOC);
@@ -28,63 +27,30 @@ if(isset($_POST['btnContra']))
         $usuarioId = $row['id'];
         //$activo = $row['email'];
 
-      $para = $email;
+      $para = $correo;
 
-      $mail = new PHPMailer();
-      $mail->IsSMTP();
-      $mail->isHTML(true);
-      $mail->SMTPAuth = true;
-      $mail->SMTPDebug = 0; //0
-      $mail->SMTPSecure = "ssl";
-      $mail->Host = "smtp.gmail.com";
-      $mail->Port = 465; // 465
-
-      $mail->Username ='informaticapjecz@gmail.com';
-      $mail->Password = 'desarrollopjecz_';
-
-      $mail->AddAddress($para);
-      $mail->Subject = 'Recuperar contraseña PJECZ';
-      $mail->Body = utf8_encode("
-        <html>
-          <body>
-
+        $email = new \SendGrid\Mail\Mail(); 
+        $email->setFrom("citas@pjec.gob.mx", "Poder Judicial del Estado de Coahuila");
+        $email->setSubject("Recuperar contraseña(Sistema de citas)");
+        $email->addTo($para);
+        $email->addContent(
+            "text/html", "<body>
           <table>
               <tr>
-                <td style='background-color:#efeff1: border-bottom:4px solid #555; text-align:center' colspan=2>
-                  <h3>Poder Judicial del Estado de Coahuila</h3>
+                <td style='background-color:#495769; border-bottom:4px solid #555; color:#fff; text-align:center' colspan=2>
+                    <h3>Poder Judicial del Estado de Coahuila</h3>
                 </td>
               </tr>
-            
               <tr>  
-                <td colspan=2>
+                <td colspan=2><br>
                   <h3>Recuperar contraseña</h3>
-                  Gracias por utilizar nuestro sistema de citas. Debajo encontrara los detalles para la nueva contraseña.
+                  Usted ha solicitado restablecer su contraseña para el Sistema de Citas en Línea del Poder Judicial 
+                  del Estado de Coahuila. A continuación le proporcionamos los detalles de su cuenta y el vínculo para
+                  restablecer su contraseña. Si usted no hizo esta petición por favor elimine inmediatamente este 
+                  mensaje.<br><br>
                   <h3>Detalles de la cuenta</h3>
                 </td>
               </td>
-              <tr>
-                <td>
-                  <label>Usuario:</label>
-                </td>
-                <td>
-                  <label>$email</label>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <label>Contrasena:</label>
-                </td>
-                <td>
-                  <label>Prueba</label>
-                </td>
-              </tr>
-
-              <tr>
-                <td colspan=2>
-                  <h3>Detalle del beneficiario</h3>
-                </td>
-              </tr>
-
               <tr>
                 <td>
                   <label>Nombre:</label>
@@ -95,47 +61,47 @@ if(isset($_POST['btnContra']))
               </tr>
               <tr>
                 <td>
-                  <label>Correo electr&oacute;nico:</label>
+                  <label>Usuario:</label>
                 </td>
                 <td>
-                  <label>$email</label>
+                  <label>$correo</label>
                 </td>
               </tr>                                     
             <tr>
               <td colspan=2 style='text-align:center'>
-                <a href='http://localhost/citas/verificarcontra.php?correo=$email&usuarioId=$usuarioId'>Cambiar contraseña</a>
+                <br><a href='https://citas.poderjudicialcoahuila.gob.mx/verificarContra.php?correo=$correo&usuarioId=$usuarioId' style='box-sizing: border-box; border-color: #348eda; font-weight: 400; text-decoration: none; display: inline-block; margin: 0; color: #ffffff; background-color: #495769; border: solid 1px #348eda; border-radius: 2px; cursor: pointer; font-size: 14px; padding: 12px 45px'>Cambiar contraseña</a>
               </td>
             </tr>
           </table>
         </body>
-      </html>
           ");
 
-        if($mail->Send()) 
-        {
-          $emailEnv="1";
+        $sendgrid = new \SendGrid('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');
+        try {
+            $response = $sendgrid->send($email);
+            $emailEnv="1";
+        } catch (Exception $e) {
+            $emailEnv="0";
         }
-        else
-        {
-          $emailEnv="0";
-        } 
 
           if($emailEnv=="1")
           {
-              $error = "Se envio un correo a su cuenta ".$email; 
+              $error = "Se envio un correo a su cuenta ".$correo; 
+              $tipoalerta ='success'; 
           }
           else
           {
               $error = "Error en el envio, vuelve a intentarlo";
+              $tipoalerta ='warning';
           }
       }
       else
       {
-        $error = "El correo no se encuentra registrado ".$email; 
+        $error = "El correo no se encuentra registrado ".$correo; 
+        $tipoalerta ='info';  
       }
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -158,78 +124,48 @@ if(isset($_POST['btnContra']))
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"> 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<link rel="stylesheet" href="resources/css/steps.css">
-<script src="resources/js/steps.js"></script>
+
 <link href="resources/imgs/calendario.ico" rel="shortcut icon" type="image/x-icon" />
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
 <body>
-    
+<?php include("header.php"); ?>
 <br>
 <div class="container" id="grad1">
-    <div class="card" style="border:1px solid #555">
-
-    <div class="card-header">
-
-        <div class="bannerx" >
-          <div class="container">
-            <div class="row">
-              <div class="col-md-3" style="padding:0px 50px;">
-                <img src='resources/imgs/logo_pjecz.png' width="220"> 
-              </div>
-              <div class="col-md-9 text-right" style="padding: 0px 50px;"><br>
-                <span style="font-size: 2em">:: Sistema de Citas ::</span>  
-                <br>
-                <a href="index.php" class="btn btn-secondary">Iniciar sesión</a> 
-              </div>
-            </div>
-          </div>
-        </div>
-    </div>
-
-    <div class="card-body">
-        <div class="row justify-content-center mt-0" >
-            <div class="col-11 col-sm-9 col-md-7 col-lg-10 text-center p-10 mt-3 mb-2">
-                <div class="card px-0 pt-4 pb-10 mt-3 mb-3">
-                    <h2><strong>Bienvenido(a) al Sistema de Citas</strong></h2>
-                    <div class="row">
-                      <div class="container text-center">
-                        <fieldset>
-                          <div class="modal-dialog text-center">
-                            <div class="col-md-12 main-section">
-                              <div class="modal-content" style="background: transparent; border:#45543D 3px solid;">
-                                <br>
-                                <div class="col-12 user-img">
-                                  <h5><strong>Recuperar contraseña</strong></h5>
-                                </div> 
-                                <br>
+    <div class="card-body text-center" >
+        <div class="row justify-content-center" >
+            <div class="col-md-6">
+          
+                    <h2><strong>Recuperar contraseña</strong></h2>
+                    <div class="row text-center">
+                        <div class="col-md-12 text-center">                        
+                          <div class="container text-left">                  
                             <form class="col-12" method="post">
-                              <div class="form-group">
-                                <input type="email" class="form-control" placeholder="correo_electronico@hotmail.com" id="txtEmail" name="txtEmail" required>
+                              <div class="form-group"><br>
+                                <label for="" class="text-left">Correo electronico</label>
+                                <input type="email" class="form-control" placeholder="correo@ejemplo.com" id="txtEmail" name="txtEmail" required>
                               </div>
                               <div class="col-sm-12 text-center">
-                                <button type="submit" class="btn btn-success" name="btnContra" id="btnContra">
+                                <button type="submit" class="btn btn-success" name="btnContra" id="btnContra" style="background-color: #163B67; color: #fff">
                                 <i class="fas fa-sign-in-alt"></i>Enviar</button>
                                 <br><br>
                               </div>
                               <div class="col-sm-12 text-center">
-                                <a style="border-top: 1px solid#888; border-bottom: 1px solid#888; padding-top: 12px; padding-bottom: 12px;font-weight: bold; font-size:1.2em; color:#250A77; margin-top:10px" href="registroPJ.php">=> Registrarme , aun no tengo cuenta !!</a> <br>
-                                <br>
-                              </div>
-                              <div class="col-sm-12 text-center">
-                                <span style="font-weight: bold; font-size:15px; color:red; margin-top:10px"><?php echo $error;?>
-                                </span>
+                                <a href="registroPJ.php" class="btn btn-secondary" style="color:white">Registrarme</a>
                                 <br><br>
                               </div>
-                            </form>
+                              
+                            </form>   
                           </div>
                         </div>
-                      </div>
-                    </fieldset>
-                  </div>
-                </div>
+                    </div>
             </div>
         </div>
     </div> <!-- termina CARD Body -->
-<div class="card-footer"> </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<link data-require="sweet-alert@*" data-semver="0.4.2" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<?php if($error!=''){echo "<script>swal('$error','$subtitulo','$tipoalerta')</script>";}?>

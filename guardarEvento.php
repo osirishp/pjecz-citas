@@ -9,7 +9,7 @@
 	$campo_usuario = strtolower($evento) ;
 	$campo_fecha = strtolower($evento)."_fecha" ;
 	
-	$sql = "update citas set estatus='$evento', $campo_usuario='$_SESSION[usuario]', $campo_fecha = now() where id='$_POST[id_cita]'" ;
+	$sql = "update citas set estatus='$evento', $campo_fecha = now() where id='$_POST[id_cita]'" ;
 	if($query = mysqli_query($link,$sql)){
 		echo "YES" ;
 	}

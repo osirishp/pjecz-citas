@@ -4,6 +4,7 @@
 //include("seguridad.php");
 include_once("funciones.php");
 $link=conectarse(); 
+date_default_timezone_set('America/Mexico_City');
 
 if ($_GET[miFecha]){
 	$miFecha = $_GET[miFecha];
@@ -146,7 +147,7 @@ $dia1 = date("w", $timestamp);
 
                             if (($d > $dia1 and $c == 1) or (checkdate($miMes, $x, $miAnho) and $c != 1)){
 								if($d==1 or $d==7){ //SI ES SABADO o DOMINGO
-									$tipoDiv = "<div class='day col-sm p-2 border border-left-0 border-top-0 text-truncate ' style='background-color:#9bbc85' >" ;		
+									$tipoDiv = "<div class='day col-sm p-2 border border-left-0 border-top-0 text-truncate ' style='background-color:#efeff1' >" ;		
 								}
 								else{
 									$tipoDiv = "<div class='day col-sm p-2 border border-left-0 border-top-0 text-truncate ' >" ;
@@ -222,17 +223,20 @@ $dia1 = date("w", $timestamp);
 								if($arreglo['estatus']=="Cancelada"){
 									$font = "<font color='red'>";
 								}
-								if($arreglo['estatus']=="Agendada" and empty($arreglo['asistio']) and $fechaSQL<date('Y-m-d')){
-									$font = "<font style='color:#9BBC85; font-weight: ligther' >";
+								if( ($arreglo['estatus']=="Agendada" and empty($arreglo['asistio']) and $fechaSQL<date('Y-m-d'))
+									or 
+									($arreglo['estatus']=="Agendada" and empty($arreglo['asistio']) and $fechaSQL==date('Y-m-d') and substr($arreglo['hora'],0,5) < date("H:i") )
+								){
+									$font = "<font style='color:#555; font-weight: ligther' >" ;
 									$inicioA = "<a href='javascript:void(0);' onclick='pasarCitaID($arreglo[id])' id='verificar_cita'>" ;
 									$finA = "</a>" ;
 								}
 								if($arreglo['estatus']=="Agendada" and $arreglo['asistio']=="SI"){
-									$font = "<font style='color:#9BBC85; font-weight: ligther'>";
+									$font = "<font style='color:#555; font-weight: ligther'>";
 									$imagenC = "<img src='resources/imgs/img_si_asistio.png' width='20' >" ;
 								}
 								if($arreglo['estatus']=="Agendada" and $arreglo['asistio']=="NO"){
-									$font = "<font style='color:#9BBC85; font-weight: ligther'>";
+									$font = "<font style='color:#555; font-weight: ligther'>";
 									$imagenC = "<img src='resources/imgs/img_no_asistio.png' width='20' >" ;
 								}
 
@@ -246,7 +250,7 @@ $dia1 = date("w", $timestamp);
 								
 								
 	
-								echo "
+								echo  "
 									<div id='eventos'>$imagenC $inicioA $font". substr($arreglo['hora'],0,5) ."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;". strtoupper($arreglo['nombre']) ." $finA</font> </div>
 									";				
 								$_SESSION['instruccion']=$sql;

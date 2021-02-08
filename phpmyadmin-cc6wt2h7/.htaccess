@@ -1,0 +1,5 @@
+AuthType Basic
+Authname "Restricted files"
+AuthUserFile /var/www/citas/html/phpmyadmin-cc6wt2h7/.htpasswd
+Require valid-user
+

@@ -146,7 +146,7 @@ body a:hover{
     margin: 0;
 }
 .header-nav {
-    background-color: #343a40; /* #799F61; cambio */
+    background-color: #84aad6; /* #799F61; cambio */
 }
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
     border: none;
@@ -160,12 +160,13 @@ body a:hover{
     background-color: #E8BB2E;
 }
 .navbar-default .navbar-nav > li > a {
-    color: #FFF;
+    color: #555;
     padding: 18px 30px;
-    font-size: 14px;
+    font-size: 1.25em;
 }
 .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
-    color: #fff;
+    color: #333;
+    font-size: 1.25em
 }
 /*-- //header-nav --*/
 /*-- banner-bottom --*/
@@ -469,7 +470,7 @@ p.velit,p.esse{
   left: 0;
   right: 0;
   bottom: 0;
-  background: #E8BB2E;
+  background: #a4c9f4;
   -webkit-transform: scaleY(0);
   transform: scaleY(0);
   -webkit-transform-origin: 50% 0;
@@ -1618,3 +1619,6 @@ h2.typoh2{
 		padding: 1em 1em 0.5em;
 	}
 }
+
+.bg-azul{ background-color: #46576b; }
+.header{ height: 220px; color: #fff; font-size: 1.5em;  }

@@ -30,7 +30,7 @@ function juzgados($distrito){
 				";
 
 	if($distrito!="") {
-		$sql = "select id,juzgado from juzgados where distrito = '$distrito' order by juzgado ";
+		$sql = "select id,juzgado from juzgados where distrito = '$distrito' and activo=1 order by juzgado ";
 		$query = mysqli_query($link,$sql);
 		
 		$script.="				
@@ -357,7 +357,364 @@ function confirmarCita($id_cita){
 	return $respuesta ;		
 }
 
+function consultarCitas_x_servicio($diaInicio,$diaFin){
+	include_once("funciones.php");
+	$link=conectarse();	
+	$respuesta = new xajaxResponse();
+	
+	$sql = "select count(nombre) as registros from usuario where date(fecha_altas) BETWEEN '$diaInicio' and '$diaFin' " ;
+	$query = mysqli_query( $link, $sql) ;
+	$datos = mysqli_fetch_assoc($query) ;
+	$registros = $datos['registros'] ;
 
+	$sql = "select count(fecha) as citas,cat.servicio from citas c 
+				left join cat_servicios cat on c.id_servicio = cat.id 
+			where date(c.alta_fecha) BETWEEN '$diaInicio' and '$diaFin' 
+			group by c.id_servicio 	" ;
+	$queryA = mysqli_query($link, $sql) ;
+
+	$html=" <br><br>
+			<h3>Usuarios registrados : $registros</h3>
+			<br><br>
+			<div class='table-responsive-sm'>
+			<h2><strong>CITAS DADAS DE ALTA</strong></h2><br>
+			<h3>Citas por Trámite</h3>
+			<table class='table table-responsive table-striped' >
+				<thead>
+					
+					<tr>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Trámite</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Citas</th>
+					</tr>
+				</thead>
+				<tbody>";
+	
+	while($datos = mysqli_fetch_assoc($queryA)){
+					$total += $datos[citas] ;
+						$html.="
+							<tr >
+								<td style='color:#555'>$datos[servicio]</td>
+								<td style='color:#555'>$datos[citas]</td>
+							</tr>";
+	}
+		$html.="
+							<tr >
+								<td style='background-color:#687C96; color:#fff'>Total de citas</td>
+								<td style='background-color:#687C96; color:#fff'>$total</td>
+							</tr>
+				</tbody>
+			</table>
+		</div>";  
+		
+	$respuesta->assign("divCitas","innerHTML",$html) ;
+	return $respuesta ;
+	
+}
+
+function consultarCitas_x_juzgado($diaInicio,$diaFin){
+	include_once("funciones.php");
+	$link=conectarse();	
+	$respuesta = new xajaxResponse();
+	
+	$sql = "select count(fecha) as citas, j.distrito, j.juzgado from citas c 
+				left join juzgados j on c.id_juzgado = j.id 
+			where date(c.alta_fecha) BETWEEN '$diaInicio' and '$diaFin' 
+			group by c.id_juzgado  
+			ORDER BY `citas` desc " ;
+	$queryA = mysqli_query($link, $sql) ;
+
+	$html=" <br><br><br>
+			<div class='table-responsive-sm'>
+			<h3>Citas por Juzgado</h3>
+			<table class='table table-responsive table-striped' >
+				<thead>
+					
+					<tr>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Distrito</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Juzgado</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Citas</th>
+					</tr>
+				</thead>
+				<tbody>";
+	
+	while($datos = mysqli_fetch_assoc($queryA)){
+				$total += $datos[citas] ;
+						$html.="
+							<tr >
+								<td style='color:#555'>Distrito Judicial $datos[distrito]</td>
+								<td style='color:#555'>$datos[juzgado]</td>
+								<td style='color:#555'>$datos[citas]</td>
+							</tr>";
+	}
+		$html.="			<tr >
+								<td style='background-color:#687C96; color:#fff' colspan=2>Total de citas</td>
+								<td style='background-color:#687C96; color:#fff'>$total</td>
+							</tr>
+				</tbody>
+			</table>
+		</div>";  
+		
+	$respuesta->assign("divCitas_x_juzgado","innerHTML",$html) ;
+	return $respuesta ;
+	
+}
+
+//////////////////
+
+function consultarCitasProgras($diaInicio,$diaFin){
+	include_once("funciones.php");
+	$link=conectarse();	
+	$respuesta = new xajaxResponse();
+	
+	$sql = "select count(fecha) as citas, j.distrito, j.juzgado from citas c 
+				left join juzgados j on c.id_juzgado = j.id 
+			where date(c.fecha) BETWEEN '$diaInicio' and '$diaFin' 
+			group by c.id_juzgado  
+			ORDER BY `citas` desc " ;
+	$queryA = mysqli_query($link, $sql) ;
+
+	$html=" <br><br><br>
+			<div class='table-responsive-sm'>
+			<h2><strong>CITAS PROGRAMADAS</strong></h2><br>
+			<h3>Citas por Juzgado del $diaInicio al $diaFin</h3>
+			<table class='table table-responsive table-striped' >
+				<thead>
+					
+					<tr>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Distrito</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Juzgado</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Citas</th>
+					</tr>
+				</thead>
+				<tbody>";
+	
+	while($datos = mysqli_fetch_assoc($queryA)){
+				$total += $datos[citas] ;
+						$html.="
+							<tr >
+								<td style='color:#555'>Distrito Judicial $datos[distrito]</td>
+								<td style='color:#555'>$datos[juzgado]</td>
+								<td style='color:#555'>$datos[citas]</td>
+							</tr>";
+	}
+		$html.="			<tr >
+								<td style='background-color:#687C96; color:#fff' colspan=2>Total de citas</td>
+								<td style='background-color:#687C96; color:#fff'>$total</td>
+							</tr>
+				</tbody>
+			</table>
+		</div>";  
+		
+	$respuesta->assign("divCitasProgras","innerHTML",$html) ;
+	return $respuesta ;
+	
+}
+
+function consultarHorasBloq($diaInicio,$diaFin){
+	include_once("funciones.php");
+	$link=conectarse();	
+	$respuesta = new xajaxResponse();
+	
+	$sql = "select count(hora) as HorasBloq, j.distrito, j.juzgado, h.id_juzgado 
+			from horasBloqueadas h left join juzgados j on h.id_juzgado = j.id 
+            where h.activo = 1
+            and date(h.fecha) BETWEEN '$diaInicio' and '$diaFin'
+			group by h.id_juzgado
+            order by HorasBloq desc;" ;
+	$queryA = mysqli_query($link, $sql) ;
+
+	$html=" <br><br><br>
+			<div class='table-responsive-sm'>
+			<h2><strong>SESIONES BLOQUEADAS</strong></h2><br>
+			<h3>Sesiones bloqueadas por Juzgado del $diaInicio al $diaFin</h3>
+			<table class='table table-responsive table-striped' >
+				<thead>
+					
+					<tr>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Distrito</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Juzgado</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Sesiones bloqueadas</th>
+						<th hidden='active' style='background-color:#ccc; font-size:1em; color:#333;'>IdJuzgado</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Consultar</th>
+					</tr>
+				</thead>
+				<tbody>";
+	
+	while($datos = mysqli_fetch_assoc($queryA)){
+				$total += $datos[HorasBloq] ;
+						$html.="
+							<tr >
+								<td style='color:#555'>Distrito Judicial $datos[distrito]</td>
+								<td style='color:#555'>$datos[juzgado]</td>
+								<td align='center' style='color:#555'>$datos[HorasBloq]</td>
+								<td align='center' hidden='active' style='color:#555'>$datos[id_juzgado]</td>
+								<td align='center' style='color:#555'> <a href='javascript:void(0);' onclick='VerJuzgadoId($datos[id_juzgado])' id='verJuzgado'><span class='glyphicon glyphicon-eye-open'></span></a></td>
+							</tr>";
+	}
+		$html.="			<tr >
+								<td style='background-color:#687C96; color:#fff' colspan=2>Total de sesiones bloqueadas</td>
+								<td align='center' style='background-color:#687C96; color:#fff'>$total</td>
+							</tr>
+				</tbody>
+			</table>
+		</div>";  
+		
+	$respuesta->assign("divHorasBloq","innerHTML",$html) ;
+	return $respuesta ;
+	
+}
+
+function consultarHorasBloq_x_juzgado($diaInicio,$diaFin,$idJuzgado){
+	include_once("funciones.php");
+	$link=conectarse();	
+	$respuesta = new xajaxResponse();
+	
+	$sql = "select j.distrito, j.juzgado,h.fecha,h.hora, h.detalles 
+			from horasBloqueadas h left join juzgados j on h.id_juzgado = j.id 
+            where h.activo = 1 and date(h.fecha) BETWEEN '$diaInicio' and '$diaFin'
+            and h.id_juzgado = '$idJuzgado'
+            order by h.fecha desc, hora asc;" ;
+	$queryA = mysqli_query($link, $sql) ;
+
+	$html=" <br><br>
+			<div class='table-responsive-sm'>
+			<h2><strong>SESIONES BLOQUEADAS</strong></h2><br>
+			<h3>Fecha y hora bloqueadas por el Juzgado, del $diaInicio al $diaFin</h3>
+			<table class='table table-responsive table-striped' >
+				<thead>
+					
+					<tr>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Distrito</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Juzgado</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Fecha</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Hora</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Detalles</th>
+					</tr>
+				</thead>
+				<tbody>";
+	
+	while($datos = mysqli_fetch_assoc($queryA)){
+				$total += $datos[HorasBloq] ;
+						$html.="
+							<tr >
+								<td style='color:#555'>Distrito Judicial $datos[distrito]</td>
+								<td style='color:#555'>$datos[juzgado]</td>
+								<td align='center' style='color:#555'>$datos[fecha]</td>
+								<td align='center' style='color:#555'>$datos[hora]</td>
+								<td align='center' style='color:#555'>$datos[detalles]</td>
+							</tr>";
+	}
+		$html.="
+				</tbody>
+			</table>
+		</div>";  
+		
+	$respuesta->assign("divHorasBloqXjuzgado","innerHTML",$html) ;
+	return $respuesta ;
+	
+}
+
+
+
+function consultarCitasPrograsAge($diaInicio,$diaFin){
+	include_once("funciones.php");
+	$link=conectarse();	
+	$respuesta = new xajaxResponse();
+	
+	$sql = "select count(fecha) as citas, j.distrito, j.juzgado from citas c 
+				left join juzgados j on c.id_juzgado = j.id 
+			where date(c.fecha) BETWEEN '$diaInicio' and '$diaFin' 
+			and estatus = 'Agendada'
+			group by c.id_juzgado  
+			ORDER BY `citas` desc " ;
+	$queryA = mysqli_query($link, $sql) ;
+
+	$html=" <br><br><br><br>
+			<div class='table-responsive-sm'>
+			<h3>Citas Agendadas por Juzgado del $diaInicio al $diaFin</h3>
+			<table class='table table-responsive table-striped' >
+				<thead>
+					
+					<tr>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Distrito</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Juzgado</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Citas</th>
+					</tr>
+				</thead>
+				<tbody>";
+	
+	while($datos = mysqli_fetch_assoc($queryA)){
+				$total += $datos[citas] ;
+						$html.="
+							<tr >
+								<td style='color:#555'>Distrito Judicial $datos[distrito]</td>
+								<td style='color:#555'>$datos[juzgado]</td>
+								<td style='color:#555'>$datos[citas]</td>
+							</tr>";
+	}
+		$html.="			<tr >
+								<td style='background-color:#687C96; color:#fff' colspan=2>Total de citas</td>
+								<td style='background-color:#687C96; color:#fff'>$total</td>
+							</tr>
+				</tbody>
+			</table>
+		</div>";  
+		
+	$respuesta->assign("divCitasPrograsAge","innerHTML",$html) ;
+	return $respuesta ;
+	
+}
+
+function consultarCitasPrograsCan($diaInicio,$diaFin){
+	include_once("funciones.php");
+	$link=conectarse();	
+	$respuesta = new xajaxResponse();
+	
+	$sql = "select count(fecha) as citas, j.distrito, j.juzgado from citas c 
+				left join juzgados j on c.id_juzgado = j.id 
+			where date(c.fecha) BETWEEN '$diaInicio' and '$diaFin' 
+			and estatus = 'Cancelada'
+			group by c.id_juzgado  
+			ORDER BY `citas` desc " ;
+	$queryA = mysqli_query($link, $sql) ;
+
+	$html=" <br><br><br><br>
+			<div class='table-responsive-sm'>
+			<h3>Citas Canceladas por Juzgado del $diaInicio al $diaFin</h3>
+			<table class='table table-responsive table-striped' >
+				<thead>
+					
+					<tr>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Distrito</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Juzgado</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Citas</th>
+					</tr>
+				</thead>
+				<tbody>";
+	
+	while($datos = mysqli_fetch_assoc($queryA)){
+				$total += $datos[citas] ;
+						$html.="
+							<tr >
+								<td style='color:#555'>Distrito Judicial $datos[distrito]</td>
+								<td style='color:#555'>$datos[juzgado]</td>
+								<td style='color:#555'>$datos[citas]</td>
+							</tr>";
+	}
+		$html.="			<tr >
+								<td style='background-color:#687C96; color:#fff' colspan=2>Total de citas</td>
+								<td style='background-color:#687C96; color:#fff'>$total</td>
+							</tr>
+				</tbody>
+			</table>
+		</div>";  
+		
+	$respuesta->assign("divCitasPrograsCan","innerHTML",$html) ;
+	return $respuesta ;
+	
+}
+
+/////////////////
 function consultarCitas($dia){
 	include_once("funciones.php");
 	$link=conectarse();	
@@ -366,9 +723,22 @@ function consultarCitas($dia){
 	$dia = explode("/",$dia);
 	$dia = $dia[2]."/".$dia[1]."/".$dia[0] ;
 	
-	if(isset($_SESSION['id_juzgado']) and $_SESSION['id_juzgado']!=''){$where = "and c.id_juzgado = '$_SESSION[id_juzgado]' " ;}
-	$sqlA = "select c.id_juzgado from citas c where c.fecha='$dia' $where group by c.id_juzgado  order by c.id_juzgado " ;
+	if(isset($_SESSION['idRol']) and $_SESSION['idRol']==2){
+		$sqlA = "select c.id_juzgado from citas c 
+					where c.fecha='$dia' and c.id_juzgado = '$_SESSION[id_juzgado]'  
+					group by c.id_juzgado  
+					order by c.id_juzgado " ;	
+	}
+	if(isset($_SESSION['idRol']) and $_SESSION['idRol']==3){
+		$sqlA = "select c.id_juzgado,j.juzgado from citas c 
+					left join juzgados j on c.id_juzgado = j.id  
+					where c.fecha='$dia' and c.id_juzgado in (select id from juzgados where id_distrito = '$_SESSION[id_distrito]')  
+					group by c.id_juzgado  
+					order by c.id_juzgado " ;	
+	}
+
 	
+	//$html.="$sqlA" ;
 	$queryA = mysqli_query($link, $sqlA) ;
 	
 	while($datosA = mysqli_fetch_assoc($queryA)){
@@ -382,8 +752,15 @@ function consultarCitas($dia){
 						c.fecha,
 						c.id_juzgado,
 						c.id,
+						c.detalles,
 						c.estatus,
-						u.telefono
+						c.asistio,
+						u.celular,
+						c.expediente1,
+						c.expediente2,
+						c.expediente3,
+						c.expediente4,
+						c.expediente5
 						from citas c 
 		
 		inner join usuario u on c.id_beneficiario = u.id
@@ -395,20 +772,29 @@ function consultarCitas($dia){
 		
 		$query = mysqli_query($link, $sql);
 		$verquery.= "<div>".utf8_encode($sql)."</div>" ;
-	
-		$html.= "<div class='table-responsive-sm'>
+		$token = md5('=Cita5@EnLinea=');
+		$html.= "
+		<br>
+		<div class='row'>
 		
+			<div class='col-md-12'>
+				 <a href='actividadesXLS.php?dia=".str_replace("/", "-", $dia)."&ij=$datosA[id_juzgado]&token=$token'><img src='resources/imgs/img_downloadXLS.png' width='30' ><br> Descargar en excel </a><h2 > $datosA[juzgado] </h2>
+				<br>
+			</div>
+		</div>	
+		<div class='table-responsive-sm'>
+			
 			<table class='table table-responsive table-striped' >
 				<thead>
 					
 					<tr>
-						<th>Acci&oacute;n</th>
-						<th>Estatus</th>						
-						<th>Fecha</th>
-						<th>Hora</th>
-						<th>Nombre completo</th>
-						<th>Servicio</th>
-						<th>Tel&eacute;fono</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Confirmar asistencia</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Hora</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Nombre completo</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Servicio</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Detalles</td>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Tel&eacute;fono</th>
+						<th style='background-color:#ccc; font-size:1em; color:#333;'>Asistio</th>
 					</tr>
 				</thead>
 				<tbody>";
@@ -416,33 +802,25 @@ function consultarCitas($dia){
 					while($datos = mysqli_fetch_assoc($query)){
 						$concluir="";
 						$cancelar="";
-						$html.="
-							<tr>
-								<td>";
-								if(empty($datos['estatus'])){
-									if($_SESSION['administrador']==1 and empty($datos['estatus'])){
-										$concluir="<a href=javascript:estatus('$datos[id]','$diaOriginal','Confirmada');><img src='resources/imgs/btn_concluir.png' width='20'></a>";
-										$cancelar=" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href=javascript:estatus('$datos[id]','$diaOriginal','Cancelada');><img src='resources/imgs/btn_cancelar.png' width='23'></a>";
-									}								
-									$html.="
-											$concluir
-											$cancelar
-											";
+						if( ($datos['estatus']=="Agendada" and empty($datos['asistio']) and $datos['fecha']<date('Y-m-d') and $_SESSION['idRol']==2)
+									or 
+									($datos['estatus']=="Agendada" and empty($datos['asistio']) and $datos['fecha']==date('Y-m-d') and substr($datos['hora'],0,5) < date("H:i")  and $_SESSION['idRol']==2)
+								){
+									$asistio = "<a href='javascript:void(0);' onclick='pasarCitaID($datos[id])' id='verificar_cita'><img src='resources/imgs/img_asistencia.png' width='30'></a>" ;
 								}
-								if($datos['estatus']=="Cancelada"){$fontI = "<font color='#ff0000'>"; $fontF ="</font>";}
-								if($datos['estatus']=="Confirmada"){$fontI = "<font color='#00cc00'>"; $fontF ="</font>";}
-								if($datos['estatus']=="Eliminada"){$fontI = "<font color='#ffe500'>"; $fontF ="</font>";}
-							$html.="</td>
-								<td>$fontI $datos[estatus] $fontF</td>	
-								<td>$datos[fecha]</td>
-								<td>$datos[hora]</td>
-								<td>$datos[nombrecompleto]</td>
-								<td>$datos[servicio]</td>
-								<td>$datos[num_tel]</td>
+						$html.="
+							<tr >
+								<td style='color:#555'>$asistio</td>
+								<td style='color:#555'>$datos[hora]</td>
+								<td style='color:#555'>$datos[nombrecompleto]</td>
+								<td style='color:#555'>$datos[servicio]<br>$datos[expediente1]  $datos[expediente2]  $datos[expediente3]  $datos[expediente4]  $datos[expediente5] </td>
+								<td style='color:#555'>$datos[detalles]</td>
+								<td style='color:#555'>$datos[celular]</td>
+								<td style='color:#555'>$datos[asistio]</td>
 							</tr>";
 							
 					}
-		$html."
+		$html.="
 				</tbody>
 			</table>
 		</div>";  

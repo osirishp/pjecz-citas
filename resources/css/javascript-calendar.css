@@ -11,6 +11,10 @@
     max-width: 270px;
     margin-top: 20px;
     margin-bottom: 20px;
+    border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+ 
 }
 
 .icalendar__month {
@@ -23,11 +27,14 @@
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
-    background-color: #2ecc71;
+    background-color: #687C96;
     width: 100%;
     padding: 10px;
     color: #fff;
     text-align: center
+        border-radius: 10px 10px 0px 0px;
+    -moz-border-radius: 10px 10px 0px 0px;
+    -webkit-border-radius: 10px 10px 0px 0px;
 }
 
 .icalendar__days, .icalendar__week-days {
@@ -35,7 +42,8 @@
     display: -ms-flexbox;
     display: flex;
     -ms-flex-wrap: wrap;
-    flex-wrap: wrap
+    flex-wrap: wrap;
+    font-size: 14px;
 }
 
 .icalendar__week-days div {
@@ -49,7 +57,7 @@
 }
 
 .icalendar__week-days {
-    background-color: #27ae60;
+    background-color: #495769;
     padding: 7px 0;
     color: #fff
 }
@@ -95,7 +103,7 @@
 }
 
 .icalendar__today {
-    background-color: #6dd65f;
+    background-color: #999;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9);
     color: white;
 }
@@ -106,7 +114,8 @@
 
 div.icalendar__next-date:hover, div.icalendar__prev-date:hover {
     background-color: transparent;
-    cursor: text
+    cursor: text;
+    font-size: 14px;
 }
 
 .icalendar__current-date #icalendarMonth {
@@ -206,11 +215,15 @@ textarea.meta-fix-departure-calendar {
     }
 }
 
-.urlMini{ text-decoration: none ;  color: #555;}
-.SabadoDomingo { background-color: #fff; }
+.urlMini{ text-decoration: none ;  color: #555; font-size:16px; }
+.SabadoDomingo { background-color: #fff; font-size: 14px; }
+.diaInhabil { background-color: red ; font-size: 14px; }
 
-.horaLibre {padding:5px ; background-color:#efeff1 ; text-align:center; border:2px #fff solid ; }
+
+.horaLibre { background-color:#efeff1 ; text-align:center; border:2px #fff solid ; width:100%; padding: 0px}
 .horaOcupada {padding:5px ; background-color:#f44b4b ; text-align:center; border:2px #fff solid ;  color: #fff ;}
-.urlHora { text-decoration: none; color : #555 ; display: block;}
-.urlHoraSelected { text-decoration: none;  display: block; background-color: #27AE60; color: #fff}
-
+.urlHora { text-decoration: none; color : #555 ; display: block; width: 100%; text-align: center; }
+.urlHoraSelected { text-decoration: none;  display: block; background-color: #27AE60; color: #fff;}
+.urlHoraSelected:hover{ color:#fff; text-decoration: none ;}
+.urlHoraSelected:visited{ color:#fff; text-decoration: none ;}
+.urlHoraSelected:link{ color:#fff; text-decoration: none ;}

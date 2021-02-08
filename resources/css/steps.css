@@ -65,15 +65,15 @@
     box-shadow: none !important;
     border: none;
     font-weight: bold;
-    border-bottom: 2px solid #39c678;
+    border-bottom: 2px solid #163b67;
     outline-width: 0
 }
 
 #msform .action-button {
     width: 100px;
-    background: #39c678;
+    background: #46576b;
     font-weight: bold;
-    color: white;
+    color: #f5edbc;
     border: 0 none;
     border-radius: 0px;
     cursor: pointer;
@@ -83,14 +83,14 @@
 
 #msform .action-button:hover,
 #msform .action-button:focus {
-    box-shadow: 0 0 0 2px white, 0 0 0 3px #39c678
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #46576b
 }
 
 #msform .action-button-previous {
     width: 100px;
-    background: #616161;
+    background: #d5d5d5;
     font-weight: bold;
-    color: white;
+    color: #555;
     border: 0 none;
     border-radius: 0px;
     cursor: pointer;
@@ -112,7 +112,7 @@ select.list-dt {
 }
 
 select.list-dt:focus {
-    border-bottom: 2px solid #39c678
+    border-bottom: 2px solid #163b67
 }
 
 .card {
@@ -199,7 +199,7 @@ select.list-dt:focus {
 
 #progressbar li.active:before,
 #progressbar li.active:after {
-    background: #39c678
+    background: #46576b
 }
 
 .radio-group {

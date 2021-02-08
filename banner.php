@@ -1,13 +1,19 @@
-	<div class="bannerx" style="background-color: #3DD481" >
+	<div class="bannerx" style="background-color: #46576b" >
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-md-3" style="padding:30px 100px;">
-					<img src='resources/imgs/logo_pjecz.png' width="400">	
+				<div class="col-md-4" style="padding:30px 80px;">
+					<img src='resources/imgs/img_pjecz.png' width="150">
+					<h4 style="padding-top: 15px; color: #f2edce;">Sistema de Citas en Linea</h4>	
 				</div>
-				<div class="col-md-9 text-right" style="padding: 20px 100px;"><br>
-					<span style="font-size: 3em; color: #fff">:: Sistema de Citas ::</span>	
-					<br><br><br><br>
-					<h2 style="color: #fff"><?php echo utf8_encode($_SESSION['juzgado']) ; ?></h2>
+				<div class="col-md-8 text-right" style="padding: 20px 80px;"><br>
+				<br>
+					<a href='index.php' style="text-decoration: none; color: #fff; font-size:1.5em; padding-right:0px; ">Cerrar Sesión</a><br><br><br><br>
+					<h2 style="color: #fff"><?php 
+										if($_SESSION['idRol']==2) {echo "Distrito " . $_SESSION['distrito']. " , " . ($_SESSION['juzgado']) ; }
+										if($_SESSION['idRol']==3) {echo  $_SESSION['DISTRITO'] ; }
+										if($_SESSION['idRol']==4) {echo  "Presidencia Poder Judicial"; }
+									?></h2>
+					
 				</div>
 			</div>
 		</div>

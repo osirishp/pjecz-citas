@@ -4,7 +4,7 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: #343A40;
+  background-color: #163b67;
   color: white;
   text-align: center;
 }

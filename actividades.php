@@ -13,6 +13,7 @@ $xajax = new xajax();
 //asociamos la funcin creada anteriormente al objeto xajax
 $xajax->register(XAJAX_FUNCTION,'consultarCitas');
 $xajax->register(XAJAX_FUNCTION,'estatusCitaAct');
+$xajax->register(XAJAX_FUNCTION,'verificarCita');
 //    $xajax->registerFunction("generos");
 $xajax->configure('javascript URI','resources/xajax/' );
 //El objeto xajax tiene que procesar cualquier peticin
@@ -67,6 +68,7 @@ $xajax->printJavaScript();
 <?php include("banner.php"); ?>
 <!-- //banner -->
 
+<?php if($_SESSION['idRol']==2){ ?>
 <!-- header-nav -->
 	<div class="header-nav">
 		<div class="container">
@@ -89,7 +91,7 @@ $xajax->printJavaScript();
 			</div>
 		</div>
 	</div>
-
+  <?php } ?>
 
 
       <!-- script-for sticky-nav -->
@@ -118,27 +120,27 @@ $xajax->printJavaScript();
   </style>
 
         
-        <div class="container" style="border:0px #CC0099 solid; background-color:#efeff1;padding-bottom:30px; padding-top:30px;">
+        <div class="container" style="border:0px #CC0099 solid; background-color:#efeff1;padding-bottom:30px; padding-top:30px; min-height: 600px;">
         
             <div class="row ancho70" style="border:0px #FF0000 solid;">
     
     <!-- Inicio del Formulario -->
     
    
-            <form name="reportes" id="reportes" action="registro.php" method="post">
+            <form name="reportes" id="reportes" action="actividades.php" method="post">
                 <input type="hidden" name="accion"/>
                 <input type="hidden" name="id" id="id" />
-    
+                <input type="hidden" name="IdCita" id="IdCita" value="">
     			
                 
-                <h3 class="hdg">Consulta</h3>
+                <!-- <h3 class="hdg">Consulta</h3> -->
                 <div class="row">
              
                     <div class="col-md-2">
                             <label for="">Dia a consultar</label>
                              <div class="book_date">
                                 <div class="input-group date">
-                                  <input type="text"  name="fecha_ini" id="fecha_ini" class="form-control" onChange="javascript:agregarBoton();xajax_consultarCitas(document.reportes.fecha_ini.value);"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                                  <input type="text"  name="fecha_ini" id="fecha_ini" class="form-control" onChange="javascript:xajax_consultarCitas(document.reportes.fecha_ini.value);"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                                 </div>    
     
                                 <!-- Include Date Range Picker -->
@@ -156,16 +158,13 @@ $xajax->printJavaScript();
                                             autoclose: true,
                                         })
                                     })
-									
-                  									function agregarBoton(){
-                  										document.getElementById('divBoton').style.display='block' ;	
-                  									}
+
                                 </script>
                             </div>
                      </div>
-                     <div class="col-md-1" id="divBoton" style="display:none">
-	                     <a href=""><img src="resources/imgs/img_addDate.png" width="80">	</a>
-                     </div>
+                     <!--div class="col-md-1" id="divBoton" style="display:block">
+	                     <a href=""><img src="resources/imgs/img_calendar.png" width="80">	</a>
+                     </div-->
                     
                 </div>
 
@@ -182,41 +181,8 @@ $xajax->printJavaScript();
                     
                     	
                     </div>
-                </div>
+                </div>    
 
-                
-				<script language="javascript">
-                    function nombres(fechaIni,fechaFin,tipo,asistente,div,url){
-                        $.post(
-                            url,
-                             {
-              								fechaIni:fechaIni,
-              								fechaFin:fechaFin,
-              								asistente:asistente,
-              								tipo:tipo
-              							},
-                            function(resp){
-                                $("#"+div+"").html(resp);	
-                            }
-                        );
-                    }
-                    
-                </script>                
-				
-                 
-                
-              <!-- Modal -->
-              <div class="modal fade" id="myModal" role="dialog">
-              </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-<!--						<input type='button' class='btn btn-primary' value='Alta de paciente' onClick='javascript:document.pacientes.id.value= \"\"; document.pacientes.accion.value=\"nuevo paciente\"; document.pacientes.submit() ;'/>
-						<input type='button' class='btn btn-success' value='Guardar Informaci&oacute;n'  onClick='javascript:guardarInfo();'/>
--->                        
-                    </div>
-                </div>
-			
             </div>
 
 		</div>
@@ -234,7 +200,65 @@ $xajax->printJavaScript();
  //exit; 
 ?>
 
+<script>
+function pasarCitaID(ID){
+      document.getElementById('IdCita').value = ID ;  
+    }
 
-
+     $(document).on('click', '#verificar_cita', function() {
+      $('#ModalVerificarCita').modal('show');
+    });    
+</script>
 
   
+
+    <div id="ModalVerificarCita" class="modal fade " role="dialog" > 
+      <div class="modal-dialog modal-md">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color:#efeff1; color:#333"> 
+            <h4 class="modal-tittle">Definir si hubo asistencia a la cita</h4>
+          </div> 
+          <form class="form-horizontal" role="form" id="form-agregar" name="form_agregar">
+            <br>
+            <div class="modal-body col-md-12"> 
+
+              <div class="row col-md-12" style="border:0px #FF0000 solid;  margin-bottom:20px; ">
+                  <center><h1> Asistio el usuario a la cita ?</h1></center>
+                            </div>                    
+                    
+              <div class="row col-md-12" style="border:0px #FF0000 solid;  margin:0 auto; ">
+                                <div class="col-md-5">
+                  <button type="button" id="CitaSI" class="btn btn-success btn-lg">Si asistio</button>
+                              </div> 
+
+                              <div class="col-md-5 col-sm-offset-2">
+                  <button type="button" id="CitaNO" class="btn btn-danger btn-lg">No asistio</button>                             
+                              </div> 
+                            </div>                    
+            
+            </div>
+            <br><br>
+            <div class="modal-footer" style="background-color:#efeff1 ">
+              <button type="button" class="btn btn-default" data-dismiss="modal">
+                <span class="glyphicon glyphicon-remove"></span><span class="hidden-xs"> Cerrar</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>  
+
+  <script language="javascript">
+     $(document).on('click', '#CitaSI', function() {
+        var id = document.getElementById('IdCita').value ;
+        xajax_verificarCita(id,"SI");
+        xajax_consultarCitas(document.reportes.fecha_ini.value);
+        
+    });    
+     $(document).on('click', '#CitaNO', function() {
+        var id = document.getElementById('IdCita').value ;
+        xajax_verificarCita(id,"NO");
+        document.reportes.submit() ;
+    });    
+
+  </script>

@@ -12,6 +12,14 @@ else{
 }
 
 
+	function convertirFecha($fecha){
+		$mes=array("","Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+		$dato = explode("-",$fecha);
+		$datoFinal = "$dato[2]-".$mes[intval($dato[1])]."-".$dato[0];
+		return $datoFinal ;
+	}
+
+
 	function conectarse(){
 	
 		if($_SESSION['entorno']=="Local"){

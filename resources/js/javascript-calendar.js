@@ -35,6 +35,7 @@ function renderDate() {
         "Noviembre",
         "Diciembre"
     ];
+    var diasInhabiles = ["2021-02-01","2021-03-15","2021-03-29","2021-03-30","2021-03-31","2021-04-01","2021-04-02","2021-05-05","2021-05-10","2021-07-19","2021-07-20","2021-07-21","2021-07-22","2021-07-23","2021-07-26","2021-07-27","2021-07-28","2021-07-29","2021-07-30","2021-09-16","2021-09-17","2021-10-12","2021-11-02","2021-11-15"];
 
     document.getElementById("icalendarMonth").innerHTML = months[dt.getMonth()] +' '+ dt.getFullYear();
     /*document.getElementById("icalendarDateStr").innerHTML = dateString.toDateString();*/
@@ -50,8 +51,9 @@ function renderDate() {
         var dia = new Date( dt.getFullYear(), dt.getMonth() , i ) ;
         var fecha = dia.toISOString().substring(0, 10) ;
         
+
         if (i === today.getDate() && dt.getMonth() === today.getMonth() && dt.getFullYear() === today.getFullYear()) {
-            cells += "<div class='icalendar__today'><a href='javascript:void(0) ;seleccionarDia(\"" + fecha + "\") ;' class='urlMini'  style='display:block;'>" + i + "</a></div>";
+            cells += "<div class='icalendar__today'><a href='javascript:void(0) ;' onclick='seleccionarDia(\"" + fecha + "\") ;' class='urlMini'  style='display:block;'>" + i + "</a></div>";
         } else {
              
              
@@ -64,7 +66,12 @@ function renderDate() {
                     cells += "<div> " + i + "</div>";
                 }
                 else{
-                    cells += "<div><a href='javascript:void(0) ;seleccionarDia(\"" + fecha + "\") ;' class='urlMini'  style='display:block;'>" + i + "</a></div>";    
+                    if(diasInhabiles.indexOf(fecha) >= 0 ){
+                        cells += "<div class='diaInhabil'>" + i + "</div>";
+                    }
+                    else{
+                        cells += "<div><a href='javascript:void(0) ;'  onclick='seleccionarDia(\"" + fecha + "\") ;'  class='urlMini'  style='display:block;'>" + i + "</a></div>";    
+                    }
                 }
                 
             }

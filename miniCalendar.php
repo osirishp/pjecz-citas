@@ -41,4 +41,6 @@
 
     <script src="./resources/js/javascript-calendar.js" type="text/javascript"></script>
 </div>
+<div style="background-color: red; width:15px; height:15px; float: left;"></div>&nbsp;&nbsp; Día inhabil<br>
 </div>
+
